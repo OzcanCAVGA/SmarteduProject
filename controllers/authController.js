@@ -27,11 +27,11 @@ exports.loginUser = async (req, res) => {
         if (user) {
             bcrypt.compare(password, user.password, (err, same) => {
 
+                //USER SESSION
                 if (same) {
-                    //USER SESSION
                     req.session.userID = user._id;
                     req.session.userEMAIL = user.email
-                    res.status(200).redirect('/')
+                    res.status(200).redirect('/users/dashboard')
                 }
 
             })
@@ -49,5 +49,15 @@ exports.loginUser = async (req, res) => {
 exports.logoutUser = (req, res) => {
     req.session.destroy(() => {
         res.redirect('/')
+    })
+}
+
+
+exports.getDashboardPage = async (req, res) => {
+    const user = await User.findById({ _id: req.session.userID });
+    res.status(200).render('dashboard', {
+        user,
+        page_name: 'dashboard',
+
     })
 }
