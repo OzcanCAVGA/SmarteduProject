@@ -25,12 +25,12 @@ exports.loginUser = async (req, res) => {
 
         const user = await User.findOne({ email })
         if (user) {
-            bcrypt.compare(password, user.password, (err, same)=>{
+            bcrypt.compare(password, user.password, (err, same) => {
 
-                if(same){
+                if (same) {
                     //USER SESSION
                     req.session.userID = user._id;
-                    
+                    req.session.userEMAIL = user.email
                     res.status(200).redirect('/')
                 }
 
@@ -39,9 +39,15 @@ exports.loginUser = async (req, res) => {
 
     } catch (error) {
         res.status(400).json({
-            status:'fail',
+            status: 'fail',
             error
         })
     }
 
+}
+
+exports.logoutUser = (req, res) => {
+    req.session.destroy(() => {
+        res.redirect('/')
+    })
 }
