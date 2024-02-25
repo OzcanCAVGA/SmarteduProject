@@ -47,35 +47,28 @@ exports.sendEmail = async (req, res) => {
         <p> ${req.body.message} </p>
     `
     const transporter = nodemailer.createTransport({
-        host: "smtp.forwardemail.net",
+        host: "smtp.ethereal.email",
         port: 587,
-        secure: true,
+        secure: false,
         auth: {
-            // TODO: replace `user` and `pass` values from <https://forwardemail.net>
-            user: "cassandra.greenholt13@ethereal.email",
-            pass: "5UZhTJeZhVp4WDWTpe",
+            user: "shawn.steuber67@ethereal.email",
+            pass: "TYT4Rb7fyFYxa1GRvk",
         },
     });
 
-    // async..await is not allowed in global scope, must use a wrapper
-    async function main() {
-        // send mail with defined transport object
+    try {
         const info = await transporter.sendMail({
-            from: '"Smart EDU Contact Form " <cassandra.greenholt13@ethereal.email>', // sender address
-            to: "cavga1997@gmail.com", // list of receivers
-            subject: "Smart EDU Contact Form New Message", // Subject line
-
-            html: outputMessage, // html body
-        });
-
-        console.log("Message sent: %s", info.messageId);
-        // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-
-        //
-        // NOTE: You can go to https://forwardemail.net/my-account/emails to see your email delivery status and preview
-        //       Or you can use the "preview-email" npm package to preview emails locally in browsers and iOS Simulator
-        //       <https://github.com/forwardemail/preview-email>
-        //
+            from: '"Smart EDU Contact Form " <cassandra.greenholt13@ethereal.email>',
+            to: req.body.email,
+            subject: "Smart EDU Contact Form New Message",
+            html: outputMessage,
+        })
+        req.flash("success", "We Received your message succesfully");
+        
+        res.status(200).redirect('/contact');
+    } catch (error) {
+        req.flash("error", "Something happened!");
+        
+        res.status(200).send("An error occurred while sending the email.");
     }
-    res.status(200).redirect('contact');
 }

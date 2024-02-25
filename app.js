@@ -2,6 +2,8 @@ const express = require('express')
 const mongoose = require('mongoose');
 const session = require('express-session')
 const MongoStore = require('connect-mongo');
+const flash = require("connect-flash")
+
 const pageRoutes = require('./routes/pageRoutes')
 const courseRoute = require('./routes/courseRoute');
 const categoryRoute = require('./routes/categoryRoute');
@@ -12,7 +14,7 @@ const app = express();
 //Connect DB
 mongoose.connect('mongodb://127.0.0.1:27017/smartedu-db')
     .then(() => { console.log("DB Connected Successfuly") })
-
+    .catch(err => console.error("DB Connection Error: ", err));
 //Template Engine
 app.set('view engine', 'ejs')
 
@@ -33,6 +35,12 @@ app.use('*', (req, res, next) => {
     userIN = req.session.userID;
     next();
 })
+app.use(flash());
+app.use((req, res, next) => {
+  res.locals.flashMessages = req.flash();
+  next();
+});
+
 
 //Routes
 app.use('/', pageRoutes)
